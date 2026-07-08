@@ -1,20 +1,61 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# ORBIT Ajo Protocol — Frontend
 
-# Run and deploy your AI Studio app
+Part of the [ORBIT Ajo Protocol](https://github.com/ORBIT-Ajo-Protocol) —
+a rotating savings & credit association (ROSCA / "Ajo") built on Stellar
+Soroban with staked collateral and member-voted default slashing. See also:
+[orbit-contracts](https://github.com/ORBIT-Ajo-Protocol/orbit-contracts)
+(Soroban smart contracts) and
+[orbit-backend](https://github.com/ORBIT-Ajo-Protocol/orbit-backend)
+(indexer + API).
 
-This contains everything you need to run your app locally.
+React/Vite/Tailwind UI for the protocol: a member-facing mobile app
+simulator (onboarding, contributions, payouts, dispute flagging, ZK
+reputation sharing) and a web admin portal (deploy a group, dispute &
+slashing hub, ZK proof verifier), plus a walkthrough of the protocol's four
+stages (SEP-24 anchor, Soroban ROSCA, collateral slasher, ZK reputation).
 
-View your app in AI Studio: https://ai.studio/apps/50175cb1-4902-4c3a-b8f2-66388f6e1316
+## Status
 
-## Run Locally
+**Currently fully simulated** — all on-chain, indexer, and anchor behavior
+in this repo is faked client-side with `useState` and fixed timeouts (see
+`src/components/MobileApp.tsx` and `src/components/WebPortal.tsx`). The real
+contracts are deployed and the real backend is live (see the two repos
+above); this frontend has not yet been wired to either. Concretely, that
+means:
 
-**Prerequisites:**  Node.js
+- Wallet addresses, transaction hashes, and ledger sequences shown in the UI
+  are fabricated strings, not real chain data.
+- The ZK reputation proof is a plaintext query string with hardcoded values,
+  not a cryptographic proof.
+- Contributions, payouts, staking, and slashing only mutate local React
+  state and never touch the deployed `orbit-contract`/`orbit-factory`.
 
+## Run locally
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+**Prerequisites:** Node.js
+
+```sh
+npm install
+npm run dev
+```
+
+Serves on `http://localhost:3000`. `npm run build` produces a static
+`dist/` bundle; `npm run lint` runs `tsc --noEmit`.
+
+No environment variables are required to run the app as-is — the
+`GEMINI_API_KEY`/`APP_URL` entries in `.env.example` are leftover scaffolding
+from the Google AI Studio template this project started from and are not
+read anywhere in `src/`.
+
+## Layout
+
+- `src/App.tsx` — shell: sidebar navigation, theming, dashboard.
+- `src/components/MobileApp.tsx` — member app simulator (onboarding, SEP-24
+  deposit/withdrawal, contributions, payouts, dispute flagging, ZK proof
+  generation).
+- `src/components/WebPortal.tsx` — admin/web side: create-orbit form,
+  dispute & slashing hub, ZK proof verifier.
+- `src/components/ProtocolFlow.tsx` — the four-stage conceptual walkthrough.
+- `src/components/NetworkLedger.tsx` — the simulated live log console.
+- `src/data.ts` / `src/types.ts` — seed data and the `OrbitGroup`/`Member`/
+  `UserWallet`/`LogEvent` domain model.
